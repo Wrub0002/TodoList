@@ -52,6 +52,7 @@ def main():
             task_dao.remove_task(task_id)
             print(f"Task {task_id} has been removed.")
 
+
         elif answer == "4":
             # Exit
             print("Goodbye!")
