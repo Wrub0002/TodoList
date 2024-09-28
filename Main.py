@@ -1,10 +1,9 @@
 # main.py
 
-from input_handling.Validate_input import yes_no_check
 from database.DAO import TaskDAO
-from database.DTO import TaskDTO
 from database.DBConnection import DBConnection
-
+from database.DTO import TaskDTO
+from input_handling.ValidationHandler import ValidationHandler
 
 
 def main():
@@ -13,7 +12,7 @@ def main():
 
     # Create DAO
     task_dao = TaskDAO(db_conn)
-    task_dao.create_table()  # Ensure the table exists
+    task_dao.create_table()
 
     print("Hello, welcome to your to-do list")
     while True:
@@ -37,31 +36,32 @@ def main():
         elif answer == "2":
             # Add a task
             task_description = input("Enter the task: ")
-            task_dto = TaskDTO(task_description=task_description)
-            task_dao.add_task(task_dto)
-            print(f"Task '{task_dto.task_description}' added with ID {task_dto.task_id}.")
-
-            # Ask if user wants to add more tasks
-            add_more = yes_no_check("Would you like to add more tasks? (Yes/No): ")
-            if add_more.lower() == "no":
-                print(f"Current tasks: {task_dao.get_all_tasks()}")
+            if ValidationHandler.validate_task_description(task_description):
+                task_dto = TaskDTO(task_description=task_description)
+                task_dao.add_task(task_dto)
+                print(f"Task '{task_dto.task_description}' added with ID {task_dto.task_id}.")
 
         elif answer == "3":
             # Remove a task
-            task_id = int(input("Enter the task ID to remove: "))
-            task_dao.remove_task(task_id)
-            print(f"Task {task_id} has been removed.")
+            tasks = task_dao.get_all_tasks()
+            if not tasks:
+                print("No tasks available to remove.")
+            else:
+                print("Current tasks:")
+                for i, task in enumerate(tasks, start=1):
+                    print(f"{i}. {task.task_description} (ID: {task.task_id})")
 
+                task_id = ValidationHandler.get_valid_task_id(tasks)
+                task_dao.remove_task(task_id)
+                print(f"Task {task_id} has been removed.")
 
         elif answer == "4":
-            # Exit
             print("Goodbye!")
             break
 
         else:
             print("Invalid option. Please try again.")
 
-    # Close the database connection when done
     DBConnection('tasks.db').close_connection()
 
 

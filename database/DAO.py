@@ -29,7 +29,6 @@ class TaskDAO:
             cur.execute("SELECT * FROM tasks")
             rows = cur.fetchall()
 
-            # Convert rows into TaskDTO objects
             tasks = [TaskDTO(task_id=row[0], task_description=row[1]) for row in rows]
             return tasks
 
