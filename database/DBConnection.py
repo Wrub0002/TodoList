@@ -8,7 +8,7 @@ class DBConnection:
     def __new__(cls, db_file):
         if cls._instance is None:
             cls._instance = super(DBConnection, cls).__new__(cls)
-            cls._instance.connection = sqlite3.connect(db_file)
+            cls._instance.connection = sqlite3.connect(db_file, check_same_thread=False)
         return cls._instance
 
     def get_connection(self):
