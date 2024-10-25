@@ -7,10 +7,8 @@ from input_handling.ValidationHandler import ValidationHandler
 
 
 def main():
-    # Create database connection
     db_conn = DBConnection('tasks.db').get_connection()
 
-    # Create DAO
     task_dao = TaskDAO(db_conn)
     task_dao.create_table()
 
@@ -34,7 +32,6 @@ def main():
                 print("Your task list is empty.")
 
         elif answer == "2":
-            # Add a task
             task_description = input("Enter the task: ")
             if ValidationHandler.validate_task_description(task_description):
                 task_dto = TaskDTO(task_description=task_description)
@@ -42,7 +39,6 @@ def main():
                 print(f"Task '{task_dto.task_description}' added with ID {task_dto.task_id}.")
 
         elif answer == "3":
-            # Remove a task
             tasks = task_dao.get_all_tasks()
             if not tasks:
                 print("No tasks available to remove.")
