@@ -1,7 +1,4 @@
-# DAO.py
-
 from database.DTO import TaskDTO
-
 
 class TaskDAO:
     def __init__(self, db_connection):
@@ -12,14 +9,15 @@ class TaskDAO:
             conn.execute('''
                 CREATE TABLE IF NOT EXISTS tasks (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    task TEXT NOT NULL
+                    task TEXT NOT NULL,
+                    priority TEXT NOT NULL
                 )
             ''')
 
     def add_task(self, task_dto):
         with self.db_connection as conn:
             cur = conn.cursor()
-            cur.execute("INSERT INTO tasks (task) VALUES (?)", (task_dto.task_description,))
+            cur.execute("INSERT INTO tasks (task, priority) VALUES (?, ?)", (task_dto.task_description, task_dto.priority))
             conn.commit()
             task_dto.task_id = cur.lastrowid
 
@@ -29,7 +27,7 @@ class TaskDAO:
             cur.execute("SELECT * FROM tasks")
             rows = cur.fetchall()
 
-            tasks = [TaskDTO(task_id=row[0], task_description=row[1]) for row in rows]
+            tasks = [TaskDTO(task_id=row[0], task_description=row[1], priority=row[2]) for row in rows]
             return tasks
 
     def remove_task(self, task_id):

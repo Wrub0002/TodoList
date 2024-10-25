@@ -19,10 +19,11 @@ def index():
 @app.route('/add', methods=['POST'])
 def add_task():
     task_description = request.form.get('task_description')
+    priority = request.form.get('priority', 'normal')
 
     # Validate the task description using ValidationHandler
     if ValidationHandler.validate_task_description(task_description):
-        task_dto = TaskDTO(task_description=task_description)
+        task_dto = TaskDTO(task_description=task_description, priority=priority)
         task_dao.add_task(task_dto)
     return redirect(url_for('index'))
 
